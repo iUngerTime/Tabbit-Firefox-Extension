@@ -1,0 +1,23 @@
+{
+  "manifest_version": 3,
+  "name": "Tabius for Firefox - Automatic Tab Grouping",
+  "version": "1.0.0",
+  "description": "Automatically groups a new tab with the tab it was opened from.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "tabius@thevirtualpanda",
+      "strict_min_version": "139.0"
+    }
+  },
+  "permissions": ["tabs", "tabGroups", "storage"],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Tabius"
+  },
+  "options_ui": {
+    "page": "options.html"
+  }
+}
