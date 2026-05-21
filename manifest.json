@@ -1,12 +1,15 @@
 {
   "manifest_version": 3,
-  "name": "Tabbit for Firefox - Automatic Tab Grouping",
+  "name": "Tabbit - Automatic Tab Grouping",
   "version": "1.0.0",
   "description": "Automatic tab grouping — groups new tabs with the tab that opened them. Configurable naming, max group size, custom rules, blacklist, and more.",
   "browser_specific_settings": {
     "gecko": {
       "id": "tabbit@thevirtualpanda",
-      "strict_min_version": "139.0"
+      "strict_min_version": "139.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
     }
   },
   "permissions": ["tabs", "tabGroups", "storage"],
