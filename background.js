@@ -134,7 +134,7 @@ browser.tabs.onCreated.addListener(async (newTab) => {
       } catch {}
     }
   } catch (err) {
-    console.error("[Tabius]", err);
+    console.error("[Tabbit]", err);
   }
 });
 
@@ -161,7 +161,7 @@ browser.tabs.onRemoved.addListener(async (tabId, removeInfo) => {
       }
     }
   } catch (err) {
-    console.error("[Tabius]", err);
+    console.error("[Tabbit]", err);
   }
 });
 
@@ -190,6 +190,6 @@ browser.tabs.onActivated.addListener(async ({ tabId, windowId }) => {
       } catch {}
     }
   } catch (err) {
-    console.error("[Tabius]", err);
+    console.error("[Tabbit]", err);
   }
 });

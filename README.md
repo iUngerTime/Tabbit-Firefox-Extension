@@ -1,14 +1,20 @@
-# Tab Grouper (Firefox)
+# Tabbit for Firefox - Automatic Tab Grouping
 
-A minimal Firefox extension that groups a newly opened tab together with the tab it was opened from. Replicates the core behavior of the Chrome extension Tabius.
+A Firefox extension that automatically groups tabs with the tab they were opened from. When you open a link in a new tab, both tabs are grouped together.
 
 Requires Firefox 139 or newer.
 
-## Behavior
+## Features
 
-- Open a link from tab A in a new tab. Tab A becomes part of a new group containing both tabs.
-- Open another link from tab A. The new tab joins the same group.
-- Open a fresh tab from the URL bar or new-tab button. Nothing happens (no opener).
+- **Group by opening tab or domain** — group every tab from the same opener, or only when domains match
+- **Configurable group naming** — name groups by domain, subdomain, full hostname, page title, or leave nameless
+- **Max tabs per group** — cap how many tabs a group can hold
+- **Auto-ungroup lonely tabs** — dissolve a group when it shrinks to one tab
+- **Auto-collapse inactive groups** — keep only the active group expanded
+- **Custom rules** — override group name and color for specific domains
+- **Blacklist** — prevent specific domains from being grouped
+
+All settings are accessible from the toolbar popup.
 
 ## Loading temporarily (for testing)
 
@@ -19,22 +25,16 @@ Requires Firefox 139 or newer.
 
 Temporary add-ons are removed when Firefox restarts.
 
-## Installing permanently
+## Packaging for distribution
 
-Firefox enforces extension signing on Release and Beta channels, so you have three options:
-
-1. **Self-distribution via AMO (recommended).** Submit the packaged extension to `addons.mozilla.org` and choose "On your own" instead of public listing. Mozilla signs it, you download the signed `.xpi`, and install it locally. No public listing, no review queue for the public catalog. Free.
-2. **Firefox Developer Edition or Nightly.** Set `xpinstall.signatures.required` to `false` in `about:config` and install the unsigned `.xpi` directly. Does not work on Release or Beta.
-3. **Firefox ESR.** Same signature-disable trick as Developer Edition. Useful if you want a stable build without signing.
-
-To package for option 1: zip the contents of this folder (not the folder itself) into a `.zip`, rename it to `.xpi`.
+Zip the extension files (not the folder itself) into an `.xpi`:
 
 ```bash
-cd tab-grouper
-zip -r ../tab-grouper.xpi manifest.json background.js
+zip -r tabbit.xpi manifest.json background.js popup.html popup.js tabbit-name-small.png icons/
 ```
 
-## Files
+Then submit to [addons.mozilla.org](https://addons.mozilla.org) for signing. Choose "On your own" for self-distribution (no public listing required).
 
-- `manifest.json`: extension metadata, permissions (`tabs`, `tabGroups`), Firefox minimum version.
-- `background.js`: listens to `tabs.onCreated` and groups via `tabs.group()`.
+## Installing unsigned (Developer Edition / Nightly / ESR only)
+
+Set `xpinstall.signatures.required` to `false` in `about:config` and install the `.xpi` directly. Does not work on Release or Beta.

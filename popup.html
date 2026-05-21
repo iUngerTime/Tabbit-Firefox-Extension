@@ -7,32 +7,234 @@
       body {
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         font-size: 13px;
-        padding: 12px;
-        color: #e0e0e0;
-        background: #2b2b2b;
-        width: 260px;
+        padding: 0;
+        color: #2a2a2a;
+        background: #fff;
+        width: 380px;
+        overflow-x: hidden;
       }
-      h3 { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
-      #domain { color: #8cf; margin-bottom: 10px; word-break: break-all; }
-      button {
-        width: 100%;
-        padding: 8px;
-        border-radius: 4px;
-        border: 1px solid #555;
-        background: #3a3a3a;
-        color: #e0e0e0;
-        cursor: pointer;
+      header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: linear-gradient(135deg, #14303f, #1a4a5a);
+        padding: 12px 16px;
+      }
+      header .logo { height: 28px; }
+      header .name { height: 20px; }
+      .content { padding: 14px 16px 16px; }
+
+      h3 {
         font-size: 13px;
+        font-weight: 600;
+        color: #1a4a5a;
+        margin: 16px 0 10px;
+        padding-top: 12px;
+        border-top: 1px solid #e0e8ec;
       }
-      button:hover { background: #4a4a4a; }
-      button.blocked { background: #2a6e2a; border-color: #3a8a3a; }
-      button.blocked:hover { background: #3a8a3a; }
+
+      .field { margin-bottom: 12px; }
+      .field > label { display: block; font-weight: 600; margin-bottom: 3px; color: #1a4a5a; }
+      .hint { font-size: 11px; color: #7a8a90; margin-top: 2px; line-height: 1.6; }
+      .hint ul { list-style: none; padding: 0; }
+      .hint ul li::before { content: "* "; color: #2a8a9a; }
+
+      .checkbox-field { display: flex; align-items: center; gap: 6px; }
+      .checkbox-field label { font-weight: 600; cursor: pointer; color: #1a4a5a; }
+
+      .field select { width: 180px; }
+      select, input[type="number"], input[type="text"] {
+        padding: 4px 8px;
+        border-radius: 4px;
+        border: 1px solid #c0d0d8;
+        background: #f5f8fa;
+        color: #2a2a2a;
+        font-size: 12px;
+      }
+      select:focus, input:focus { border-color: #2a8a9a; outline: none; }
+      input[type="number"] { width: 60px; }
+      input[type="text"] { width: 140px; }
+
+      input[type="checkbox"] { accent-color: #2a8a9a; }
+
+      .add-row {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+        margin-bottom: 6px;
+        flex-wrap: wrap;
+      }
+
+      button {
+        padding: 3px 10px;
+        border-radius: 4px;
+        border: 1px solid #c0d0d8;
+        background: #f5f8fa;
+        color: #2a2a2a;
+        cursor: pointer;
+        font-size: 12px;
+        transition: background 0.15s;
+      }
+      button:hover { background: #e8f0f4; }
+      button.add {
+        background: #1a4a5a;
+        border-color: #1a4a5a;
+        color: #fff;
+      }
+      button.add:hover { background: #1a5a6a; }
+      button.del {
+        background: #fff;
+        border-color: #e0a0a0;
+        color: #c04040;
+        padding: 2px 6px;
+      }
+      button.del:hover { background: #fdf0f0; }
+
+      .list-item {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 5px 8px;
+        background: #f5f8fa;
+        border: 1px solid #e0e8ec;
+        border-radius: 4px;
+        margin-bottom: 3px;
+        font-size: 12px;
+      }
+      .list-item .domain { flex: 1; color: #2a2a2a; }
+      .list-item .arrow { color: #a0b0b8; }
+      .list-item .alias { color: #1a6a7a; font-weight: 500; }
+
+      .color-dot {
+        display: inline-block;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        vertical-align: middle;
+      }
+
+      .empty { color: #a0b0b8; font-size: 11px; font-style: italic; }
+
+      .saved {
+        font-size: 11px;
+        color: #5ce0d6;
+        opacity: 0;
+        transition: opacity 0.3s;
+        margin-left: 6px;
+      }
+      .saved.show { opacity: 1; }
     </style>
   </head>
   <body>
-    <h3>Tabius</h3>
-    <div id="domain"></div>
-    <button id="toggle"></button>
+    <header>
+      <img class="logo" src="icons/icon-48.png" alt="Tabbit" />
+      <img class="name" src="tabbit-name-small.png" alt="Tabbit" />
+      <span class="saved" id="saved">Saved</span>
+    </header>
+    <div class="content">
+
+    <div class="field">
+      <label for="groupby">Group tabs by</label>
+      <select id="groupby">
+        <option value="sot">opening tab (default)</option>
+        <option value="sd">domain</option>
+      </select>
+      <div class="hint">
+        <ul>
+          <li>opening tab &mdash; groups every tab opened from the same parent tab</li>
+          <li>domain &mdash; only groups tabs when their domains match the opener's</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="naming">Name new groups using</label>
+      <select id="naming">
+        <option value="dom">domain (default)</option>
+        <option value="subdom">subdomain.domain</option>
+        <option value="subdomtld">subdomain.domain.tld</option>
+        <option value="title">Group opener's title</option>
+        <option value="nameless">nameless</option>
+      </select>
+      <div class="hint">
+        Using dev.facebook.com as an example:
+        <ul>
+          <li>domain &mdash; facebook</li>
+          <li>subdomain.domain &mdash; dev.facebook</li>
+          <li>subdomain.domain.tld &mdash; dev.facebook.com</li>
+          <li>opener's title &mdash; the page title of the tab that opened the group</li>
+          <li>nameless &mdash; no name</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="maximum">Max tabs per group</label>
+      <input type="number" id="maximum" min="0" max="999" value="0" />
+      <div class="hint">
+        <ul>
+          <li>0 &mdash; unlimited (default)</li>
+          <li>2&ndash;999 &mdash; new tabs won't be added once a group reaches this size</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="checkbox-field">
+        <input type="checkbox" id="lonely" />
+        <label for="lonely">Ungroup the last tab when a group shrinks to 1</label>
+      </div>
+      <div class="hint">Closing tabs in a group until only one remains will automatically ungroup it.</div>
+    </div>
+
+    <div class="field">
+      <div class="checkbox-field">
+        <input type="checkbox" id="autocollapse" />
+        <label for="autocollapse">Auto-collapse inactive groups</label>
+      </div>
+      <div class="hint">
+        Switching tabs collapses every group except the one you're in.
+      </div>
+    </div>
+
+    <h3>Custom Rules</h3>
+    <div class="hint" style="margin-bottom: 8px">
+      Override group name and color for specific domains.
+    </div>
+    <div class="add-row">
+      <input type="text" id="ruleUrl" placeholder="example.com" />
+      <input type="text" id="ruleAlias" placeholder="Alias" style="width: 80px" />
+      <select id="ruleColor">
+        <option value="">random</option>
+        <option value="grey">grey</option>
+        <option value="blue">blue</option>
+        <option value="red">red</option>
+        <option value="yellow">yellow</option>
+        <option value="green">green</option>
+        <option value="pink">pink</option>
+        <option value="purple">purple</option>
+        <option value="cyan">cyan</option>
+        <option value="orange">orange</option>
+      </select>
+      <button class="add" id="addRule">+ Add</button>
+    </div>
+    <div id="rulesList"></div>
+
+    <h3>Blacklist</h3>
+    <div class="hint" style="margin-bottom: 8px">
+      Tabs opened from blacklisted domains are never grouped.
+    </div>
+    <div class="add-row">
+      <input type="text" id="blockUrl" placeholder="example.com" />
+      <button class="add" id="addBlock">+ Add</button>
+    </div>
+    <div id="blockList"></div>
+
+    <div style="margin-top: 16px; padding-top: 12px; border-top: 1px solid #e0e8ec;">
+      <button id="resetDefaults" style="width: 100%; color: #c04040; border-color: #e0a0a0;">Reset to defaults</button>
+    </div>
+
+    </div>
     <script src="popup.js"></script>
   </body>
 </html>
