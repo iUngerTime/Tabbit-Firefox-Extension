@@ -2,8 +2,9 @@ const DEFAULTS = {
   groupby: "sot",
   naming: "dom",
   maximum: 0,
-  lonely: false,
+  lonely: true,
   autocollapse: false,
+  prettynames: true,
   customrules: [],
   blocklist: [],
 };
@@ -20,6 +21,7 @@ const els = {
   maximum: document.getElementById("maximum"),
   lonely: document.getElementById("lonely"),
   autocollapse: document.getElementById("autocollapse"),
+  prettynames: document.getElementById("prettynames"),
   saved: document.getElementById("saved"),
   ruleUrl: document.getElementById("ruleUrl"),
   ruleAlias: document.getElementById("ruleAlias"),
@@ -34,9 +36,12 @@ const els = {
 let settings = { ...DEFAULTS };
 
 function toHostname(input) {
-  const s = input.trim();
+  let s = input.trim().toLowerCase();
+  s = s.replace(/^https?:\/\//, "");
+  s = s.split(/[/?#]/)[0];
+  s = s.replace(/\/+$/, "");
   try {
-    return new URL(s.includes("://") ? s : "https://" + s).hostname;
+    return new URL("https://" + s).hostname;
   } catch {
     return s;
   }
@@ -53,16 +58,36 @@ function save(partial) {
   flashSaved();
 }
 
+function swapRules(i, j) {
+  const rules = [...settings.customrules];
+  [rules[i], rules[j]] = [rules[j], rules[i]];
+  save({ customrules: rules });
+  renderRules();
+}
+
 function renderRules() {
   const list = els.rulesList;
   list.innerHTML = "";
-  if (settings.customrules.length === 0) {
-    list.innerHTML = '<div class="empty">No custom rules.</div>';
+  const rules = settings.customrules;
+  if (rules.length === 0) {
+    list.innerHTML = '<div class="empty">No custom rules. First match wins.</div>';
     return;
   }
-  for (const rule of settings.customrules) {
+  rules.forEach((rule, i) => {
     const item = document.createElement("div");
     item.className = "list-item";
+
+    const up = document.createElement("button");
+    up.className = "move";
+    up.textContent = "▲";
+    up.disabled = i === 0;
+    up.addEventListener("click", () => swapRules(i, i - 1));
+
+    const down = document.createElement("button");
+    down.className = "move";
+    down.textContent = "▼";
+    down.disabled = i === rules.length - 1;
+    down.addEventListener("click", () => swapRules(i, i + 1));
 
     const domain = document.createElement("span");
     domain.className = "domain";
@@ -76,7 +101,7 @@ function renderRules() {
     alias.className = "alias";
     alias.textContent = rule.alias;
 
-    item.append(domain, arrow, alias);
+    item.append(up, down, domain, arrow, alias);
 
     if (rule.color && COLOR_MAP[rule.color]) {
       const dot = document.createElement("span");
@@ -90,14 +115,14 @@ function renderRules() {
     del.className = "del";
     del.textContent = "×";
     del.addEventListener("click", () => {
-      const updated = settings.customrules.filter((r) => r.id !== rule.id);
+      const updated = rules.filter((r) => r.id !== rule.id);
       save({ customrules: updated });
       renderRules();
     });
     item.append(del);
 
     list.append(item);
-  }
+  });
 }
 
 function renderBlocklist() {
@@ -136,6 +161,7 @@ browser.storage.local.get(DEFAULTS).then((stored) => {
   els.maximum.value = settings.maximum;
   els.lonely.checked = settings.lonely;
   els.autocollapse.checked = settings.autocollapse;
+  els.prettynames.checked = settings.prettynames;
   renderRules();
   renderBlocklist();
 });
@@ -145,6 +171,7 @@ els.naming.addEventListener("change", () => save({ naming: els.naming.value }));
 els.maximum.addEventListener("change", () => save({ maximum: parseInt(els.maximum.value, 10) || 0 }));
 els.lonely.addEventListener("change", () => save({ lonely: els.lonely.checked }));
 els.autocollapse.addEventListener("change", () => save({ autocollapse: els.autocollapse.checked }));
+els.prettynames.addEventListener("change", () => save({ prettynames: els.prettynames.checked }));
 
 els.addRule.addEventListener("click", () => {
   const raw = els.ruleUrl.value.trim();
@@ -183,6 +210,7 @@ document.getElementById("resetDefaults").addEventListener("click", () => {
   els.maximum.value = settings.maximum;
   els.lonely.checked = settings.lonely;
   els.autocollapse.checked = settings.autocollapse;
+  els.prettynames.checked = settings.prettynames;
   renderRules();
   renderBlocklist();
   flashSaved();

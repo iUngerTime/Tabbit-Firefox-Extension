@@ -89,6 +89,16 @@
         padding: 2px 6px;
       }
       button.del:hover { background: #fdf0f0; }
+      button.move {
+        background: #fff;
+        border-color: #c0d0d8;
+        color: #1a4a5a;
+        padding: 2px 5px;
+        font-size: 11px;
+        line-height: 1;
+      }
+      button.move:hover { background: #e8f0f4; }
+      button.move:disabled { opacity: 0.25; cursor: default; background: #fff; }
 
       .list-item {
         display: flex;
@@ -166,6 +176,17 @@
           <li>nameless &mdash; no name</li>
         </ul>
       </div>
+      <div class="checkbox-field" style="margin-top: 6px">
+        <input type="checkbox" id="prettynames" />
+        <label for="prettynames">Pretty names</label>
+      </div>
+      <div class="hint">
+        <ul>
+          <li>domain &mdash; Facebook</li>
+          <li>subdomain.domain &mdash; Dev Facebook</li>
+          <li>subdomain.domain.tld &mdash; Dev Facebook Com</li>
+        </ul>
+      </div>
     </div>
 
     <div class="field">
@@ -199,13 +220,13 @@
 
     <h3>Custom Rules</h3>
     <div class="hint" style="margin-bottom: 8px">
-      Override group name and color for specific domains.
+      First match wins. Rules match subdomains too (gitlab.com matches about.gitlab.com).
     </div>
     <div class="add-row">
       <input type="text" id="ruleUrl" placeholder="example.com" />
       <input type="text" id="ruleAlias" placeholder="Alias" style="width: 80px" />
       <select id="ruleColor">
-        <option value="">random</option>
+        <option value="">Firefox default</option>
         <option value="grey">grey</option>
         <option value="blue">blue</option>
         <option value="red">red</option>

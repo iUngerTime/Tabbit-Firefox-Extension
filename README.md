@@ -1,40 +1,38 @@
-# Tabbit for Firefox - Automatic Tab Grouping
+# Tabbit for Firefox
 
-A Firefox extension that automatically groups tabs with the tab they were opened from. When you open a link in a new tab, both tabs are grouped together.
+![Tabbit](branding/marketing-image.png)
 
-Requires Firefox 139 or newer.
+Automatic tab grouping for Firefox. When you open a link in a new tab, Tabbit groups it with the tab that opened it.
+
+Requires **Firefox 139** or newer.
 
 ## Features
 
 - **Group by opening tab or domain** — group every tab from the same opener, or only when domains match
 - **Configurable group naming** — name groups by domain, subdomain, full hostname, page title, or leave nameless
+- **Pretty names** — capitalize and clean up group names automatically
 - **Max tabs per group** — cap how many tabs a group can hold
 - **Auto-ungroup lonely tabs** — dissolve a group when it shrinks to one tab
 - **Auto-collapse inactive groups** — keep only the active group expanded
-- **Custom rules** — override group name and color for specific domains
+- **Custom rules** — override group name and color for specific domains, with ordered first-match-wins evaluation
 - **Blacklist** — prevent specific domains from being grouped
 
-All settings are accessible from the toolbar popup.
+All settings are accessible from the toolbar popup — click the Tabbit icon in your toolbar.
 
-## Loading temporarily (for testing)
+## Screenshots
 
-1. Open `about:debugging` in Firefox.
-2. Click **This Firefox** in the left sidebar.
-3. Click **Load Temporary Add-on**.
-4. Select `manifest.json` from this folder.
+| Settings | Custom Rules | Blacklist |
+|----------|-------------|-----------|
+| ![Settings](branding/screenshots/tabbit-settings-configure.png) | ![Custom Rules](branding/screenshots/tabbit-custom-rules.png) | ![Blacklist](branding/screenshots/tabbit-blacklist.png) |
 
-Temporary add-ons are removed when Firefox restarts.
+| Group Naming | Custom Rules in Action |
+|-------------|----------------------|
+| ![Naming](branding/screenshots/tabbit-settings-name.png) | ![Demo](branding/screenshots/tabbit-custom-rules-demo.png) |
 
-## Packaging for distribution
+## Install
 
-Zip the extension files (not the folder itself) into an `.xpi`:
+Coming soon to [addons.mozilla.org](https://addons.mozilla.org).
 
-```bash
-zip -r tabbit.xpi manifest.json background.js popup.html popup.js tabbit-name-small.png icons/
-```
+## License
 
-Then submit to [addons.mozilla.org](https://addons.mozilla.org) for signing. Choose "On your own" for self-distribution (no public listing required).
-
-## Installing unsigned (Developer Edition / Nightly / ESR only)
-
-Set `xpinstall.signatures.required` to `false` in `about:config` and install the `.xpi` directly. Does not work on Release or Beta.
+[GPL-3.0](LICENSE.md)

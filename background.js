@@ -2,8 +2,9 @@ const DEFAULTS = {
   groupby: "sot",
   naming: "dom",
   maximum: 0,
-  lonely: false,
+  lonely: true,
   autocollapse: false,
+  prettynames: true,
   customrules: [],
   blocklist: [],
 };
@@ -14,9 +15,13 @@ function getSettings() {
 
 function getHostname(url) {
   try {
-    return new URL(url).hostname;
+    return new URL(url).hostname.toLowerCase();
   } catch {
-    return "";
+    try {
+      return new URL("https://" + url).hostname.toLowerCase();
+    } catch {
+      return "";
+    }
   }
 }
 
@@ -43,10 +48,15 @@ function getDomainName(url, convention) {
   }
 }
 
-function deriveGroupName(tab, naming) {
+function prettify(name) {
+  return name.split(".").map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+}
+
+function deriveGroupName(tab, naming, pretty) {
   if (naming === "nameless") return "";
   if (naming === "title") return tab.title || getDomainName(tab.url, "dom");
-  return getDomainName(tab.url, naming);
+  const name = getDomainName(tab.url, naming);
+  return pretty ? prettify(name) : name;
 }
 
 function isBlocked(openerUrl, blocklist) {
@@ -54,9 +64,14 @@ function isBlocked(openerUrl, blocklist) {
   return blocklist.some((e) => getHostname(e.blockedUrl) === host);
 }
 
+function domainMatches(hostname, ruleHostname) {
+  return hostname === ruleHostname || hostname.endsWith("." + ruleHostname);
+}
+
 function findCustomRule(openerUrl, rules) {
   const host = getHostname(openerUrl);
-  return rules.find((r) => getHostname(r.url) === host) || null;
+  if (!host) return null;
+  return rules.find((r) => domainMatches(host, getHostname(r.url))) || null;
 }
 
 async function tryUngroup(tabId) {
@@ -128,7 +143,7 @@ browser.tabs.onCreated.addListener(async (newTab) => {
           if (rule.color) props.color = rule.color;
           await browser.tabGroups.update(groupId, props);
         } else {
-          const name = deriveGroupName(opener, settings.naming);
+          const name = deriveGroupName(opener, settings.naming, settings.prettynames);
           await browser.tabGroups.update(groupId, { title: name });
         }
       } catch {}
